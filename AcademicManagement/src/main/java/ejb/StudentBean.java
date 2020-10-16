@@ -88,16 +88,12 @@ public class StudentBean {
     public void enrollStudentInSubject(int subjectCode, String username){
         Student student = findStudent(username);
         Subject subject = entityManager.find(Subject.class,subjectCode);
-        System.out.println("ASDASD2");
         if (student!=null && subject!= null){
-            System.out.println("ASDASD3");
             if (student.getCourse().equals(subject.getCourse())){
                 if (!student.getSubjects().contains(subject)) {
-                    System.out.println("ASDASD4");
                     student.addSubject(subject);
                     subject.addStudent(student);
                 } else {
-                    System.out.println("ASDASD5");
                     student.removeSubject(subject);
                     subject.removeStudent(student);
                 }
