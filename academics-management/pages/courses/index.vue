@@ -3,9 +3,24 @@
     <!-- easy components usage, already shipped with bootstrap css-->
     <b-container>
       <!-- try to remove :fields=”fields” to see the magic -->
-      <b-table striped over :items="courses" :fields="fields" />
+      <b-table striped over :items="courses" :fields="fields">
+        <template v-slot:cell(actions)="row">
+          <nuxt-link
+            class="btn btn-link"
+            :to="`/courses/${row.item.code}`"
+          >
+            Details
+          </nuxt-link>
+          <nuxt-link
+            class="btn btn-link"
+            :to="`/courses/${row.item.code}`"
+          >
+            Remove
+          </nuxt-link>
+        </template>
+      </b-table>
     </b-container>
-    <nuxt-link to="/create">
+    <nuxt-link to="/courses/create">
       Create a New Course
     </nuxt-link>
   </div>
@@ -15,7 +30,7 @@
 export default {
   data () {
     return {
-      fields: ['name'],
+      fields: ['name', 'actions'],
       courses: []
     }
   },

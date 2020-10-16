@@ -1,6 +1,7 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,18 +15,21 @@ public class Course implements Serializable {
 
     @Id
     private int code;
+    @NotNull
     private String name;
     @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE)
     private List<Student> students;
     @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE)
     private List<Subject> subjects;
+    @Version
+    private int version;
 
     public Course() {
         students = new ArrayList<>();
         subjects = new ArrayList<>();
     }
 
-    public Course(int code, String name) {
+    public Course(int code, @NotNull String name) {
         this.code = code;
         this.name = name;
         students = new ArrayList<>();
@@ -70,5 +74,23 @@ public class Course implements Serializable {
 
     public void setStudents(List<Student> students) {
         this.students = students;
+    }
+
+    public List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Subject> subjects) {
+        this.subjects = subjects;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 }

@@ -1,14 +1,14 @@
 package entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "getAllSubjects", query = "SELECT s FROM Subject s ORDER BY s.course.name, s.scholarYear DESC, s.courseYear, s.name")
+        @NamedQuery(name = "getAllSubjects", query = "SELECT s FROM Subject s ORDER BY s.course.name, s.schoolarYear DESC, s.courseYear, s.name")
 })
 @Table(name = "SUBJECTS", uniqueConstraints = @UniqueConstraint(columnNames = {"NAME", "COURSE", "SCHOLAR_YEAR"}))
 public class Subject implements Serializable {
@@ -18,28 +18,40 @@ public class Subject implements Serializable {
     private String name;
     @ManyToOne
     @JoinColumn(name = "COURSE_CODE")
+    @NotNull
     private Course course;
     @Column(name = "COURSE_YEAR")
-    private String courseYear;
+    private int courseYear;
     @Column(name = "SCHOLAR_YEAR")
-    private String scholarYear;
+    private int schoolarYear;
     @ManyToMany
     @JoinTable(name = "SUBJECTS_STUDENTS",
-    joinColumns = @JoinColumn(name = "SUBJECT_CODE", referencedColumnName = "CODE"),
-    inverseJoinColumns = @JoinColumn(name = "STUDENT_USERNAME", referencedColumnName = "USERNAME"))
-    private LinkedHashSet<Student> students;
+            joinColumns = @JoinColumn(name = "SUBJECT_CODE", referencedColumnName = "CODE"),
+            inverseJoinColumns = @JoinColumn(name = "STUDENT_USERNAME", referencedColumnName =
+                    "USERNAME"))
+    private Set<Student> students;
+    @ManyToMany
+    @JoinTable(name = "SUBJECTS_TEACHERS",
+            joinColumns = @JoinColumn(name = "SUBJECT_CODE", referencedColumnName = "CODE"),
+            inverseJoinColumns = @JoinColumn(name = "TEACHERS_USERNAME", referencedColumnName =
+                    "USERNAME"))
+    private Set<Teacher> teachers;
+    @Version
+    private int version;
 
     public Subject() {
-        this.students = new LinkedHashSet();
+        this.students = new HashSet<>();
+        this.teachers = new HashSet<>();
     }
 
-    public Subject(int code, String name, Course course, String courseYear, String scholarYear) {
+    public Subject(int code, String name, Course course, int courseYear, int schoolarYear) {
         this.code = code;
         this.name = name;
         this.course = course;
         this.courseYear = courseYear;
-        this.scholarYear = scholarYear;
-        this.students = new LinkedHashSet();
+        this.schoolarYear = schoolarYear;
+        this.students = new HashSet<>();
+        this.teachers = new HashSet<>();
     }
 
     public int getCode() {
@@ -66,28 +78,36 @@ public class Subject implements Serializable {
         this.course = course;
     }
 
-    public String getCourseYear() {
+    public int getCourseYear() {
         return courseYear;
     }
 
-    public void setCourseYear(String courseYear) {
+    public void setCourseYear(int courseYear) {
         this.courseYear = courseYear;
     }
 
-    public String getScholarYear() {
-        return scholarYear;
+    public int getSchoolarYear() {
+        return schoolarYear;
     }
 
-    public void setScholarYear(String scholarYear) {
-        this.scholarYear = scholarYear;
+    public void setSchoolarYear(int schoolarYear) {
+        this.schoolarYear = schoolarYear;
     }
 
-    public LinkedHashSet<Student> getStudents() {
+    public Set<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(LinkedHashSet<Student> students) {
+    public void setStudents(Set<Student> students) {
         this.students = students;
+    }
+
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<Teacher> teachers) {
+        this.teachers = teachers;
     }
 
     public void addStudent(Student student){
@@ -96,5 +116,13 @@ public class Subject implements Serializable {
 
     public void removeStudent(Student student){
         students.remove(student);
+    }
+
+    public void addTeacher(Teacher teacher) {
+        teachers.add(teacher);
+    }
+
+    public void removerTeacher(Teacher teacher){
+        teachers.remove(teacher);
     }
 }

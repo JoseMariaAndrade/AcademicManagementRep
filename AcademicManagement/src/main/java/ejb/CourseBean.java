@@ -1,7 +1,6 @@
 package ejb;
 
 import entity.Course;
-import entity.Student;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -10,22 +9,40 @@ import java.util.List;
 
 @Stateless
 public class CourseBean {
+
     @PersistenceContext
     EntityManager entityManager;
 
-    public void create(int code, String name, List<Student> students){
-        Course course = new Course(code, name);
-        for (Student student : students){
-            course.addStudent(student);
+    public void create(int code, String name)
+            /*throws MyEntityExistsException*/ {
+        Course course = findCourse(code);
+
+        if (course == null){
+            course = new Course(code, name);
+            entityManager.persist(course);
         }
-        entityManager.persist(course);
+
+        //throw new MyEntityExistsException();
     }
 
     public List<Course> getAllCourses(){
         return (List<Course>) entityManager.createNamedQuery("getAllCourses").getResultList();
     }
 
-    public Course findCourse(int code) {
-        return entityManager.find(Course.class, code);
+    public Course findCourse(int courseCode) {
+        return entityManager.find(Course.class, courseCode);
+    }
+
+    public Course removeCourse(int courseCode){
+        Course course = findCourse(courseCode);
+        if (course!=null) {
+            /*for (Student student: course.getStudents()) {
+                course.removeStudent(student);
+            }
+            entityManager.persist(course);*/
+            entityManager.remove(course);
+        }
+
+        return course;
     }
 }

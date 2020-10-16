@@ -1,6 +1,8 @@
 package dtos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StudentDTO  implements Serializable {
 
@@ -10,17 +12,20 @@ public class StudentDTO  implements Serializable {
     private String password;
     private int courseCode;
     private String courseName;
+    private List<SubjectDTO> subjects;
 
     public StudentDTO() {
+        this.subjects = new ArrayList<>();
     }
 
-    public StudentDTO(String username, String name, String email, String password, int courseCode, String courseName) {
+    public StudentDTO(String username, String password, String name, String email, int courseCode, String courseName) {
         this.username = username;
         this.name = name;
         this.email = email;
         this.password = password;
         this.courseCode = courseCode;
         this.courseName = courseName;
+        this.subjects = new ArrayList<>();
     }
 
     public String getUsername() {
@@ -69,6 +74,14 @@ public class StudentDTO  implements Serializable {
 
     public void setCourseName(String courseName) {
         this.courseName = courseName;
+    }
+
+    public List<SubjectDTO> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<SubjectDTO> subjects) {
+        this.subjects = subjects;
     }
 }
 

@@ -104,3 +104,6 @@ dist
 .tern-port
 
 /academics-management/.idea/
+/AcademicManagement/.idea/
+/AcademicManagement/AcademicManagement.iml
+*.class
