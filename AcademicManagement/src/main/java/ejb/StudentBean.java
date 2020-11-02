@@ -9,6 +9,7 @@ import exceptions.MyEntityNotFoundException;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -29,52 +30,49 @@ public class StudentBean {
 
         Course course = entityManager.find(Course.class, courseId);
         if (course == null){
-            throw new MyEntityNotFoundException(String.format("Course with code: %d not found.", courseId));
+            throw new MyEntityNotFoundException(String.format("Course with code %d not found.", courseId));
         }
 
         try {
             student = new Student(username, password, name, email, course);
             course.addStudent(student);
             entityManager.persist(student);
-        } catch (ConstraintViolationException constraintViolationException){
+        }
+        catch (ConstraintViolationException constraintViolationException) {
             throw new MyConstraintViolationException(constraintViolationException);
         }
-
-        /*Student student = findStudent(username);
-        if (student==null) {
-            Course course = entityManager.find(Course.class, courseId);
-            if (course != null) {
-                student = new Student(username, password, name, email, course);
-                course.addStudent(student);
-                entityManager.persist(student);
-            /*} else {
-                throw new MyEntityNotFoundException();
-            }
-        } else {
-            throw new MyEntityExistsException();
-            }
-        }*/
     }
 
-    /*public void update(String username, String password, String name, String email, int courseCode){
+    public void update(String username, String password, String name, String email, int courseCode)
+            throws MyEntityNotFoundException, MyConstraintViolationException{
+
         Student student = entityManager.find(Student.class, username);
         if (student != null) {
+
             Course course = entityManager.find(Course.class, courseCode);
             if (course != null){
-                entityManager.lock(student, LockModeType.OPTIMISTIC);
-                student.setCourse(course);
-                student.setName(name);
-                student.setEmail(email);
-                student.setPassword(password);
+
+                try {
+                    entityManager.lock(student, LockModeType.OPTIMISTIC);
+                    student.setCourse(course);
+                    student.setName(name);
+                    student.setEmail(email);
+                    student.setPassword(password);
+                }
+                catch (ConstraintViolationException constraintViolationException){
+                    throw new MyConstraintViolationException(constraintViolationException);
+                }
             }
             else {
                 System.err.println("ERROR_FINDING_COURSE");
+                throw new MyEntityNotFoundException(String.format("Course with code %d not found.", courseCode));
             }
         }
         else {
             System.err.println("ERROR_FINDING_STUDENT");
+            throw new MyEntityNotFoundException(String.format("Username with username %d not found.", username));
         }
-    }*/
+    }
 
     public List<Student> getAllStudents() {
         // remember, maps to: “SELECT s FROM Student s ORDER BY s.name”

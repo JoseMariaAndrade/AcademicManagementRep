@@ -29,7 +29,11 @@
       No subjects enrolled.
     </p>
     <nuxt-link to="/students">
-      Back
+      Go Back
+    </nuxt-link>
+    &nbsp;
+    <nuxt-link :to="`/students/${this.username}/send-email`">
+      Send e-email
     </nuxt-link>
   </b-container>
 </template>

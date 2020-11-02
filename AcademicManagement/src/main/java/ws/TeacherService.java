@@ -5,6 +5,8 @@ import dtos.TeacherDTO;
 import ejb.TeacherBean;
 import entity.Subject;
 import entity.Teacher;
+import exceptions.MyConstraintViolationException;
+import exceptions.MyEntityExistsException;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -87,18 +89,17 @@ public class TeacherService {
 
     @POST
     @Path("/")
-    public Response createNewTeacher(TeacherDTO teacherDTO){
-        teacherBean.create(teacherDTO.getUsername(),
+    public Response createNewTeacher(TeacherDTO teacherDTO)
+            throws MyEntityExistsException, MyConstraintViolationException {
+
+        teacherBean.create(
+                teacherDTO.getUsername(),
                 teacherDTO.getPassword(),
                 teacherDTO.getName(),
                 teacherDTO.getEmail(),
-                teacherDTO.getOffice());
-        Teacher teacher = teacherBean.findTeacher(teacherDTO.getUsername());
-        if (teacher == null){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-        return Response.status(Response.Status.CREATED)
-                .entity(toDTO(teacher))
-                .build();
+                teacherDTO.getOffice()
+        );
+
+        return Response.status(Response.Status.CREATED).build();
     }
 }

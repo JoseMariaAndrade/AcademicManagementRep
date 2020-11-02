@@ -1,10 +1,13 @@
 package ejb;
 
 import entity.Course;
+import exceptions.MyConstraintViolationException;
+import exceptions.MyEntityExistsException;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 @Stateless
@@ -14,15 +17,21 @@ public class CourseBean {
     EntityManager entityManager;
 
     public void create(int code, String name)
-            /*throws MyEntityExistsException*/ {
+            throws MyEntityExistsException, MyConstraintViolationException {
         Course course = findCourse(code);
 
-        if (course == null){
+        if (course != null) {
+            throw new MyEntityExistsException(String.format("Course with code %s already exists", code));
+        }
+
+        try {
             course = new Course(code, name);
             entityManager.persist(course);
         }
+        catch (ConstraintViolationException constraintViolationException) {
+            throw new MyConstraintViolationException(constraintViolationException);
+        }
 
-        //throw new MyEntityExistsException();
     }
 
     public List<Course> getAllCourses(){

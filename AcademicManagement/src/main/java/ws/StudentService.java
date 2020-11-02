@@ -1,7 +1,9 @@
 package ws;
 
+import dtos.EmailDTO;
 import dtos.StudentDTO;
 import dtos.SubjectDTO;
+import ejb.EmailBean;
 import ejb.StudentBean;
 import entity.Student;
 import entity.Subject;
@@ -10,6 +12,7 @@ import exceptions.MyEntityExistsException;
 import exceptions.MyEntityNotFoundException;
 
 import javax.ejb.EJB;
+import javax.mail.MessagingException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -25,6 +28,8 @@ public class StudentService {
 
     @EJB
     private StudentBean studentBean;
+    @EJB
+    private EmailBean emailBean;
 
     //Converts an entity Student to a DTO Student class
     private StudentDTO toDTONoSubjects(Student student){
@@ -117,32 +122,44 @@ public class StudentService {
     @Path("/")
     public Response createNewStudent(StudentDTO studentDTO)
             throws MyEntityExistsException, MyEntityNotFoundException, MyConstraintViolationException {
-        studentBean.create(studentDTO.getUsername(),
+
+        studentBean.create(
+                studentDTO.getUsername(),
                 studentDTO.getPassword(),
                 studentDTO.getName(),
                 studentDTO.getEmail(),
-                studentDTO.getCourseCode());
+                studentDTO.getCourseCode()
+        );
 
-        return Response.status(Response.Status.CREATED)
-                .build();
+        return Response.status(Response.Status.CREATED).build();
     }
 
-    /*@POST
-    @Path("/")
-    public Response updateStudent(StudentDTO studentDTO){
-        studentBean.create(studentDTO.getUsername(),
+    @PUT
+    public Response updateStudent(StudentDTO studentDTO)
+            throws MyEntityNotFoundException, MyConstraintViolationException{
+
+        studentBean.update(
+                studentDTO.getUsername(),
                 studentDTO.getPassword(),
                 studentDTO.getName(),
                 studentDTO.getEmail(),
-                studentDTO.getCourseCode());
-        Student student = studentBean.findStudent(studentDTO.getUsername());
+                studentDTO.getCourseCode()
+        );
+
+        return Response.status(Response.Status.CREATED).build();
+    }
+
+    @POST
+    @Path("/{username}/email/send")
+    public Response senEmail(@PathParam("username") String username, EmailDTO emailDTO)
+            throws MyEntityNotFoundException, MessagingException {
+        Student student = studentBean.findStudent(username);
         if (student == null){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            throw new MyEntityNotFoundException(String.format("Student with username %s not found in our records.", username));
         }
-        return Response.status(Response.Status.CREATED)
-                .entity("toDTO(student)")
-                .build();
-    }*/
+        emailBean.send(student.getEmail(), emailDTO.getSubject(), emailDTO.getMessage());
+        return Response.status(Response.Status.OK).entity("E-mail sent").build();
+    }
 
     @POST
     @Path("{username}/{subject}")

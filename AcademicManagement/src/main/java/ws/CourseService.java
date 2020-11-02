@@ -5,6 +5,8 @@ import dtos.SubjectDTO;
 import ejb.CourseBean;
 import entity.Course;
 import entity.Subject;
+import exceptions.MyConstraintViolationException;
+import exceptions.MyEntityExistsException;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -82,7 +84,8 @@ public class CourseService {
 
     @POST
     @Path("/")
-    public Response createNewCourse(CourseDTO courseDTO) {
+    public Response createNewCourse(CourseDTO courseDTO)
+            throws MyEntityExistsException, MyConstraintViolationException {
         courseBean.create(courseDTO.getCode(),
                 courseDTO.getName()
         );

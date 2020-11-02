@@ -7,6 +7,9 @@ import ejb.SubjectBean;
 import entity.Student;
 import entity.Subject;
 import entity.Teacher;
+import exceptions.MyConstraintViolationException;
+import exceptions.MyEntityExistsException;
+import exceptions.MyEntityNotFoundException;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -89,7 +92,9 @@ public class SubjectService {
 
     @POST
     @Path("/")
-    public Response createNewSubject(SubjectDTO subjectDTO){
+    public Response createNewSubject(SubjectDTO subjectDTO)
+            throws MyEntityExistsException, MyEntityNotFoundException, MyConstraintViolationException {
+
         subjectBean.create(
                 subjectDTO.getCode(),
                 subjectDTO.getName(),
@@ -97,13 +102,8 @@ public class SubjectService {
                 subjectDTO.getCourseYear(),
                 subjectDTO.getSchoolYear()
         );
-        Subject subject = subjectBean.findSubject(subjectDTO.getCode());
-        if (subject == null){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-        return Response.status(Response.Status.CREATED)
-                .entity(toDTO(subject))
-                .build();
+
+        return Response.status(Response.Status.CREATED).build();
     }
 
     private List<StudentDTO> studentsToDTOs(Set<Student> students) {

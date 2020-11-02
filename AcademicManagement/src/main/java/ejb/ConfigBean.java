@@ -21,6 +21,8 @@ public class ConfigBean {
     TeacherBean teacherBean;
     @EJB
     AdministratorBean administratorBean;
+    @EJB
+    EmailBean emailBean;
 
     @PostConstruct
     void populateDB(){

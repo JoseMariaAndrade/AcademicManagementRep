@@ -11,6 +11,9 @@
           >
             Details
           </nuxt-link>
+          <nuxt-link :to="`/students/${row.item.username}/send-email`">
+            Send e-email
+          </nuxt-link>
         </template>
       </b-table>
       <nuxt-link to="/">
