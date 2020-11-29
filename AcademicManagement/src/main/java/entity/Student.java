@@ -5,6 +5,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,6 +20,8 @@ public class Student extends User implements Serializable{
     private Course course;
     @ManyToMany(mappedBy = "students")
     private Set<Subject> subjects;
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE)
+    private List<Document> documents;
 
     public Student() {
         super();
@@ -53,5 +56,13 @@ public class Student extends User implements Serializable{
 
     public void setSubjects(Set<Subject> subjects) {
         this.subjects = subjects;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
     }
 }

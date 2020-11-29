@@ -32,7 +32,7 @@
       Go Back
     </nuxt-link>
     &nbsp;
-    <nuxt-link :to="`/students/${this.username}/send-email`">
+    <nuxt-link :to="`/students/${username}/send-email`">
       Send e-email
     </nuxt-link>
   </b-container>
